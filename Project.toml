@@ -1,0 +1,13 @@
+name = "FourLEDs"
+uuid = "e4995ccf-bc81-41a1-b448-37e49e15893b"
+authors = ["Yakir Gagnon <12.yakir@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
