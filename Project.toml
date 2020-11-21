@@ -3,6 +3,12 @@ uuid = "e4995ccf-bc81-41a1-b448-37e49e15893b"
 authors = ["Yakir Gagnon <12.yakir@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+COBS = "51d40088-776c-571e-837e-515b83a6b6e6"
+Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
+GtkReactive = "27996c0f-39cd-5cc1-a27a-05f136f946b6"
+LibSerialPort = "a05a14c7-6e3b-5ba9-90a2-45558833e1df"
+
 [compat]
 julia = "1"
 
