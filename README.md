@@ -2,7 +2,7 @@
 
 Invoke the package manager with `]` in the REPL and:
 ```julia
-add https://github.com/yakir12/FourLEDs
+add https://github.com/yakir12/FourLEDs.jl
 ```
 exit the package manager with backspace. 
 
