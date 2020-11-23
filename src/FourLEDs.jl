@@ -6,9 +6,18 @@ export main
 
 baudrate = 115200
 
-disconnected() = isempty(LibSerialPort.get_port_list())
-
-get_port() = LibSerialPort.open(only(LibSerialPort.get_port_list()), baudrate)
+function get_port()
+    for port in LibSerialPort.get_port_list()
+        try 
+            sp = LibSerialPort.open(port, baudrate)
+            sleep(3)
+            encode(sp, [0x00,0x00])
+            return sp
+        catch ex
+        end
+    end
+    return nothing
+end
 
 function connect_slider(sp, id)
     sl = slider(0x00:0xff, value = 0x00)
@@ -24,14 +33,13 @@ function main()
     push!(bx, msg)
     Gtk.showall(mainwin)
 
-    if disconnected()
+    sp = get_port()
+    if isnothing(sp)
         push!(msg, "LED strip not connected, try again...")
         sleep(3)
         destroy(mainwin)
         return nothing
     end
-    sleep(3)
-    sp = get_port()
     push!(msg, "Connected!")
     @async begin
         sleep(1)
