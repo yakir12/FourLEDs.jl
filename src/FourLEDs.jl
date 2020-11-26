@@ -28,35 +28,64 @@ function connect_slider(sp, id)
 end
 
 function main()
-    mainwin = Window("FourLEDs") |> (bx = Box(:v))
-    msg = label("Connecting...")
-    push!(bx, msg)
-    Gtk.showall(mainwin)
+    win = Window("FourLEDs") 
+    vb = Box(:v)
+    push!(win, vb)
+    hb = Box(:h)
+    push!(vb, hb)
+    msg = label("Is the LED strip disconnected?")
+    ok = button("Yes")
+    push!(hb, msg)
+    push!(hb, ok)
 
-    sp = get_port()
-    if isnothing(sp)
-        push!(msg, "LED strip not connected, try again...")
-        sleep(3)
-        destroy(mainwin)
-        return nothing
+    without = map(ok) do _
+        LibSerialPort.get_port_list()
     end
-    push!(msg, "Connected!")
-    @async begin
-        sleep(1)
-        push!(msg, "")
+    Gtk.showall(win)
+    c = Condition()
+    h = map(ok) do _
+        notify(c)
     end
+    wait(c)
 
-    for i in 0x00:0x03
-        push!(bx, connect_slider(sp, i))
-    end
+    destroy(hb)
 
-    Gtk.showall(mainwin)
+    hb = Box(:h)
+    push!(vb, hb)
+    msg = label("Now, connect the LED strip")
+    ok = button("OK")
+    push!(hb, msg)
+    push!(hb, ok)
+    with = map(ok) do _
+        LibSerialPort.get_port_list()
+    end
+    Gtk.showall(win)
+    c = Condition()
+    h = map(ok) do _
+        notify(c)
+    end
+    wait(c)
+
+
+    h = map(with, without) do w, wo
+        @show with, without
+        for port in setdiff(w, wo)
+            push!(msg, "")
+            sp = LibSerialPort.open(port, baudrate)
+
+            for i in 0x00:0x03
+                push!(vb, connect_slider(sp, i))
+            end
+
+            Gtk.showall(win)
+        end
+    end
 
     if !isinteractive()
-        Gtk.waitforsignal(mainwin, :destroy)
+        Gtk.waitforsignal(win, :destroy)
         close(sp)
     else
-        signal_connect(mainwin, :destroy) do widget
+        signal_connect(win, :destroy) do widget
             close(sp)
         end
     end
@@ -66,5 +95,4 @@ function main()
 end
 
 end
-
 
